@@ -1,0 +1,21 @@
+# Executable files
+segodnyaconnect
+segodnyaconnectd
+/build
+
+# Config files
+*.conf
+
+# Vscode settings
+/.vscode
+.clangd
+
+# Documents
+*.txt
+
+# gitlab-ci-local
+/.gitlab-ci-local
+Dockerfile
+
+# Temp files
+a*
