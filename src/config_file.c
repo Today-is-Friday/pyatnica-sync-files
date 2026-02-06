@@ -1,8 +1,8 @@
 #include <asm-generic/errno-base.h>  // mkdir error list
 #include <getopt.h>                  // optind
 #include <pwd.h>                     // getuid(), getpwuid()
-#include <stdio.h>
-#include <string.h>
+#include <stdio.h>                   // File operations
+#include <string.h>                  // strlen(), strcat()
 #include <sys/stat.h>
 #include <sys/syslog.h>
 #include <sys/types.h>
@@ -15,11 +15,11 @@ int add_to_config(char const* config_path, char const* dir_path) {
   int state = 1;
   FILE* config_file = fopen(config_path, "a");
   if (config_file != NULL) {
-    fputs(dir_path, config_file);
-    fputc('\n', config_file);
+    if (fputs(dir_path, config_file) != EOF && fputc('\n', config_file) != EOF)
+      state = 0;
     fclose(config_file);
   } else
-    state = 0;
+    state = -1;
 
   return state;
 }
