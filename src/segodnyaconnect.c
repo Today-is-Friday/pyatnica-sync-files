@@ -17,13 +17,14 @@
 int main(int argc, char* argv[]) {
   int _add_folder;
   check(argc, argv, &_add_folder);
-  if (_add_folder) add_folder(argc, argv, optind);
+  if (_add_folder) add_directory(argc, argv, optind);
 
   return 0;
 }
 
 int check(int argc, char* argv[], int* ptr_add_folder) {
-  struct option long_options[] = {{"--add-folder", 0, NULL, 'a'}};
+  struct option long_options[] = {
+      {"add-directory", 0, NULL, 'a'}, {"add", 0, NULL, 'a'}, {0, 0, 0, 0}};
   int flag;
   while ((flag = getopt_long(argc, argv, "a", long_options, 0)) != -1) {
     switch (flag) {
@@ -38,15 +39,18 @@ int check(int argc, char* argv[], int* ptr_add_folder) {
   return 1;
 }
 
-int add_folder(int argc, char* argv[], int optind) {
+int add_directory(int argc, char* argv[], int optind) {
   while (optind != argc) {
-    const char* dir_name = argv[optind];
+    const char* path = argv[optind];
     struct stat statbuf;
-    if (stat(dir_name, &statbuf) != 0)
+    if (stat(path, &statbuf) != 0)
       perror("directory doesn't exist");
     else if (S_ISDIR(statbuf.st_mode)) {
-      printf("directory found\n");
-      add_to_config(USER_DIRS_FILE_NAME, dir_name);  // need to fix
+      printf("directory added to config\n");
+      add_to_config(USER_DIRS_FILE_NAME, path);  // need to fix
+    } else if (S_ISREG(statbuf.st_mode)) {
+      printf("file added to config\n");
+      add_to_config(USER_DIRS_FILE_NAME, path);  // need to fix
     } else
       perror("this is not directory");
     optind++;
@@ -55,17 +59,17 @@ int add_folder(int argc, char* argv[], int optind) {
   return 1;
 }
 
-int add_to_config(const char* config_path, const char* dir_path) {
-  int state = 1;
-  FILE* file = fopen(config_path, "a");
-  if (file) {
-    state = fputs(dir_path, file);
-    fclose(file);
-  } else
-    state = 0;
+// int add_to_config(const char* config_path, const char* dir_path) {
+//   int state = 1;
+//   FILE* file = fopen(config_path, "a");
+//   if (file) {
+//     state = fputs(dir_path, file);
+//     fclose(file);
+//   } else
+//     state = 0;
 
-  return state;
-}
+//   return state;
+// }
 
 // LOGS
 
@@ -84,6 +88,6 @@ void log_mkdir_error(const char* path) {
 void log_pwd_war() { printf("getpwuid failed for UID %d\n", getuid()); }
 
 void log_pwd_error() {
-  printf(LOG_ERR, "No passwd entry found for UID %d\n", getuid());
+  printf("No passwd entry found for UID %d\n", getuid());
   exit(EXIT_FAILURE);
 }
