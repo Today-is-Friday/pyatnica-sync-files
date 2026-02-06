@@ -1,5 +1,5 @@
 CC=gcc
-cflags=-Wall -Werror -Wextra -std=c11
+cflags=-Wall -Werror -Wextra -std=c17
 dflags=-g -O0
 
 .PHONY: all debug 
