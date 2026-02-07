@@ -15,8 +15,9 @@ int add_to_config(char const* config_path, char const* dir_path) {
   int state = 1;
   FILE* config_file = fopen(config_path, "a");
   if (config_file != NULL) {
-    if (fputs(dir_path, config_file) != EOF && fputc('\n', config_file) != EOF)
+    if (fputs(dir_path, config_file) == EOF && fputc('\n', config_file) == EOF)
       state = 0;
+
     fclose(config_file);
   } else
     state = -1;
@@ -69,16 +70,17 @@ int fix_config_file(char const* file_name) {
   // If directory doesn't exist it create it
   state = get_dir_path(dir_path);
   if (state)
-    if (mkdir(dir_path, 0755) == -1) log_mkdir_error(dir_path);
+    if (mkdir(dir_path, 0755) ==
+        -1)  // log_mkdir_error(dir_path); // fix it! (make log funcs)
 
-  // Tries recreate a file
-  if ((state = get_file_path(path, file_name))) {
-    FILE* file = fopen(path, "a");
-    if (file != NULL)
-      fclose(file);
-    else
-      state = 0;
-  }
+      // Tries recreate a file
+      if ((state = get_file_path(path, file_name))) {
+        FILE* file = fopen(path, "a");
+        if (file != NULL)
+          fclose(file);
+        else
+          state = 0;
+      }
   return state;
 }
 
