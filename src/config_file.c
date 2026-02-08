@@ -15,7 +15,7 @@ int add_to_config(char const* config_path, char const* dir_path) {
   int state = 1;
   FILE* config_file = fopen(config_path, "a");
   if (config_file != NULL) {
-    if (fputs(dir_path, config_file) == EOF && fputc('\n', config_file) == EOF)
+    if (fputs(dir_path, config_file) == EOF || fputc('\n', config_file) == EOF)
       state = 0;
 
     fclose(config_file);
